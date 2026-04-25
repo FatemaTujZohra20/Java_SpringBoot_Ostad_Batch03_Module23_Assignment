@@ -7,6 +7,10 @@ plugins {
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
+ext {
+	mapstructVersion = '1.6.3'
+}
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(25)
@@ -29,6 +33,10 @@ dependencies {
 
 	// OpenAPI documentation UI for Spring MVC APIs.
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
+
+	// MapStruct generates type-safe mapper implementations at compile time.
+	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 
 	// Lombok is used only at compile time and by annotation processors.
 	compileOnly 'org.projectlombok:lombok'

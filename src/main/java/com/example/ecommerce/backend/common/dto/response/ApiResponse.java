@@ -1,5 +1,6 @@
-package com.example.ecommerce.backend.common.dto;
+package com.example.ecommerce.backend.common.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
     private boolean success;
     private String message;
@@ -18,7 +20,13 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true, "Operation successful", data);
     }
 
+    public static <T> ApiResponse<T> success(String message) {
+        return new ApiResponse<>(true, message, null);
+    }
+
     public static <T> ApiResponse<T> success(String message, T data) {
         return new ApiResponse<>(true, message, data);
     }
+
+    public static <T> ApiResponse<T> error(String message) { return new ApiResponse<>(false, message, null); }
 }
