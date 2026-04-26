@@ -50,10 +50,10 @@ public class CategoryController {
      */
     @Operation(
             summary = "Create a new category",
-            description = "Creates a product category using a unique category code.",
+            description = "Creates a product category using a unique category code and optional description.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
-                    description = "Category creation payload containing the category name and unique code.",
+                    description = "Category creation payload containing the category name, unique code, and optional description.",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = CategoryCreateRequest.class),
@@ -62,7 +62,8 @@ public class CategoryController {
                                     value = """
                                             {
                                               "name": "Electronics",
-                                              "code": "ELEC"
+                                              "code": "ELEC",
+                                              "description": "Devices, gadgets, and consumer electronics."
                                             }
                                             """
                             )
@@ -160,7 +161,7 @@ public class CategoryController {
     }
 
     /**
-     * Updates an existing category name.
+     * Updates existing category details.
      *
      * @param id      category identifier
      * @param request validated category update payload
@@ -169,10 +170,10 @@ public class CategoryController {
      */
     @Operation(
             summary = "Update category details",
-            description = "Updates the name of an existing product category.",
+            description = "Updates the name and description of an existing product category.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
-                    description = "Category update payload containing the replacement category name.",
+                    description = "Category update payload containing the replacement category name and description.",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = CategoryUpdateRequest.class),
@@ -180,7 +181,8 @@ public class CategoryController {
                                     name = "Update category",
                                     value = """
                                             {
-                                              "name": "Consumer Electronics"
+                                              "name": "Consumer Electronics",
+                                              "description": "Smart devices, gadgets, and everyday electronics."
                                             }
                                             """
                             )

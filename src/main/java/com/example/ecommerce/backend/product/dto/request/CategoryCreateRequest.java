@@ -10,6 +10,9 @@ public record CategoryCreateRequest(
 
         @NotBlank(message = "Category code is required")
         @Size(max = 50, message = "Category code cannot exceed 50 characters")
-        String code
+        String code,
+
+        @Size(max = 500, message = "Category description cannot exceed 500 characters")
+        String description
 ) {
 }

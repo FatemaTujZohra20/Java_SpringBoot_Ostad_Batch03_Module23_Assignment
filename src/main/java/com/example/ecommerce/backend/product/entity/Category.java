@@ -36,6 +36,12 @@ public class Category extends BaseEntity implements Auditable {
     private String code;
 
     /**
+     * Short description of the category's catalog scope.
+     */
+    @Column(length = 500)
+    private String description;
+
+    /**
      * Indicates whether the category is available for active catalog use.
      */
     @Column(name = "is_active", nullable = false)

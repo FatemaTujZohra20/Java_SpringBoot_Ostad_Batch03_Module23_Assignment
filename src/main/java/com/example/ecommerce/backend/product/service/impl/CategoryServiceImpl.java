@@ -52,6 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Category update(Long id, CategoryUpdateRequest request) {
         Category category = getById(id);
         category.setName(request.name());
+        category.setDescription(request.description());
         return categoryRepository.save(category);
     }
 
