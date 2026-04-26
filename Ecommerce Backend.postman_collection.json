@@ -1,0 +1,620 @@
+{
+  "info": {
+    "_postman_id": "e34907cf-2ce3-4474-b845-a2d153980177",
+    "name": "Ecommerce Backend",
+    "description": "Professional Postman collection for testing CategoryController endpoints. Run requests in order for the full CRUD flow.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "3537602"
+  },
+  "item": [
+    {
+      "name": "Happy Path",
+      "item": [
+        {
+          "name": "Create Category",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const uniqueSuffix = Date.now();",
+                  "pm.collectionVariables.set('CATEGORY_NAME', 'Premium Home Appliances');",
+                  "pm.collectionVariables.set('CATEGORY_CODE', `HOME-APPLIANCES-${uniqueSuffix}`);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "pm.collectionVariables.set('CATEGORY_ID', response.data.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{CATEGORY_NAME}}\",\n  \"code\": \"{{CATEGORY_CODE}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
+            },
+            "description": "Creates a new product category using a unique professional business code."
+          },
+          "response": []
+        },
+        {
+          "name": "List Categories",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories?page=0&size=10",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Retrieves categories using zero-based pagination."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Category - Duplicate Code",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.collectionVariables.get('CATEGORY_CODE')) {",
+                  "    throw new Error('Run Create Category before this request so CATEGORY_CODE is available.');",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Duplicate Home Appliances\",\n  \"code\": \"{{CATEGORY_CODE}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
+            },
+            "description": "Validates unique category code handling while the created category still exists."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Category By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories/{{CATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "{{CATEGORY_ID}}"
+              ]
+            },
+            "description": "Retrieves the category created earlier in the collection run."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Category",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('UPDATED_CATEGORY_NAME', 'Smart Home Appliances');"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{UPDATED_CATEGORY_NAME}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories/{{CATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "{{CATEGORY_ID}}"
+              ]
+            },
+            "description": "Updates the category name while preserving the business code."
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories/{{CATEGORY_ID}}/status?isActive=false",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "{{CATEGORY_ID}}",
+                "status"
+              ],
+              "query": [
+                {
+                  "key": "isActive",
+                  "value": "false"
+                }
+              ]
+            },
+            "description": "Sets the category active flag to false."
+          },
+          "response": []
+        },
+        {
+          "name": "Activate Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories/{{CATEGORY_ID}}/status?isActive=true",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "{{CATEGORY_ID}}",
+                "status"
+              ],
+              "query": [
+                {
+                  "key": "isActive",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Sets the category active flag back to true."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.unset('CATEGORY_ID');"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories/{{CATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "{{CATEGORY_ID}}"
+              ]
+            },
+            "description": "Permanently deletes the category created during the collection run."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Validation And Error Scenarios",
+      "item": [
+        {
+          "name": "Create Category - Missing Code",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Professional Audio Equipment\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
+              ]
+            },
+            "description": "Validates that category code is required."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Category - Not Found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories/{{NON_EXISTING_CATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "{{NON_EXISTING_CATEGORY_ID}}"
+              ]
+            },
+            "description": "Verifies not-found behavior for an unknown category id."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Category - Blank Name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories/{{NON_EXISTING_CATEGORY_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "{{NON_EXISTING_CATEGORY_ID}}"
+              ]
+            },
+            "description": "Validates that category name is required for updates."
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Category Status - Missing isActive",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories/{{NON_EXISTING_CATEGORY_ID}}/status",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "{{NON_EXISTING_CATEGORY_ID}}",
+                "status"
+              ]
+            },
+            "description": "Validates that isActive query parameter is required."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.collectionVariables.set('NON_EXISTING_CATEGORY_ID', pm.collectionVariables.get('NON_EXISTING_CATEGORY_ID') || '999999999');"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "CATEGORY_ID",
+      "value": ""
+    },
+    {
+      "key": "CATEGORY_NAME",
+      "value": "Premium Home Appliances"
+    },
+    {
+      "key": "CATEGORY_CODE",
+      "value": ""
+    },
+    {
+      "key": "UPDATED_CATEGORY_NAME",
+      "value": "Smart Home Appliances"
+    },
+    {
+      "key": "NON_EXISTING_CATEGORY_ID",
+      "value": "999999999"
+    }
+  ]
+}
