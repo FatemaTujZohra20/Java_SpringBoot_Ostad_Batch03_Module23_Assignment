@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +51,7 @@ public class CategoryController {
     @Operation(
             summary = "Create a new category",
             description = "Creates a product category using a unique category code.",
-            requestBody = @RequestBody(
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     description = "Category creation payload containing the category name and unique code.",
                     content = @Content(
@@ -171,7 +170,7 @@ public class CategoryController {
     @Operation(
             summary = "Update category details",
             description = "Updates the name of an existing product category.",
-            requestBody = @RequestBody(
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     description = "Category update payload containing the replacement category name.",
                     content = @Content(
