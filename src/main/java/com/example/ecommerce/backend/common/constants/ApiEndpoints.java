@@ -16,4 +16,9 @@ public class ApiEndpoints {
     public static class Product {
         public static final String BASE_PRODUCT = API_VERSION + "/products";
     }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Inventory {
+        public static final String BASE_INVENTORY = API_VERSION + "/inventory";
+    }
 }
