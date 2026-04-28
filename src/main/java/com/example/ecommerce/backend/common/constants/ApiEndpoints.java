@@ -11,4 +11,9 @@ public class ApiEndpoints {
     public static class Category {
         public static final String BASE_CATEGORY = API_VERSION + "/categories";
     }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Product {
+        public static final String BASE_PRODUCT = API_VERSION + "/products";
+    }
 }
