@@ -1502,6 +1502,346 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Add Item To Cart",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.collectionVariables.get('PRODUCT_ID')) {",
+                  "    throw new Error('Run Product / Demo Setup / Create Product For Inventory Demo and Inventory / Happy Path / Create Inventory first.');",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "pm.collectionVariables.set('CART_ID', response.data.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/cart/items",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "cart",
+                "items"
+              ]
+            },
+            "description": "Adds an active product to the current user cart after checking available inventory.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": {{PRODUCT_ID}},\n  \"quantity\": 2\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current Cart",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/cart",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "cart"
+              ]
+            },
+            "description": "Retrieves the current user cart including item totals."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Item To Cart - Insufficient Stock",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/cart/items",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "cart",
+                "items"
+              ]
+            },
+            "description": "Validates insufficient available stock handling for cart additions.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": {{PRODUCT_ID}},\n  \"quantity\": 999999\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Order",
+      "item": [
+        {
+          "name": "Checkout Cart",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.collectionVariables.get('CART_ID')) {",
+                  "    throw new Error('Run Cart / Add Item To Cart before checkout.');",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "pm.collectionVariables.set('ORDER_ID', response.data.id);",
+                  "pm.collectionVariables.set('ORDER_NUMBER', response.data.orderNumber);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/orders/checkout",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "checkout"
+              ]
+            },
+            "description": "Creates a confirmed order from the current cart, reserves inventory, and clears the cart.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cartId\": {{CART_ID}}\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order By ID",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.collectionVariables.get('ORDER_ID')) {",
+                  "    throw new Error('Run Order / Checkout Cart before retrieving an order.');",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/orders/{{ORDER_ID}}",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "{{ORDER_ID}}"
+              ]
+            },
+            "description": "Retrieves a confirmed order with its item snapshots."
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Order",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.collectionVariables.get('ORDER_ID')) {",
+                  "    throw new Error('Run Order / Checkout Cart before cancelling an order.');",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/orders/{{ORDER_ID}}/cancel",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "{{ORDER_ID}}",
+                "cancel"
+              ]
+            },
+            "description": "Cancels a confirmed order and releases its reserved inventory."
+          },
+          "response": []
+        },
+        {
+          "name": "Checkout Cart - Not Found",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/orders/checkout",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "checkout"
+              ]
+            },
+            "description": "Verifies not-found behavior for checkout with an unknown cart id.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cartId\": {{NON_EXISTING_CART_ID}}\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Order - Already Cancelled",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/orders/{{ORDER_ID}}/cancel",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "{{ORDER_ID}}",
+                "cancel"
+              ]
+            },
+            "description": "Run after Cancel Order to verify that an already cancelled order cannot be cancelled again."
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "event": [
@@ -1511,7 +1851,9 @@
         "type": "text/javascript",
         "exec": [
           "pm.collectionVariables.set('NON_EXISTING_CATEGORY_ID', pm.collectionVariables.get('NON_EXISTING_CATEGORY_ID') || '999999999');",
-          "pm.collectionVariables.set('NON_EXISTING_PRODUCT_ID', pm.collectionVariables.get('NON_EXISTING_PRODUCT_ID') || '999999999');"
+          "pm.collectionVariables.set('NON_EXISTING_PRODUCT_ID', pm.collectionVariables.get('NON_EXISTING_PRODUCT_ID') || '999999999');",
+          "pm.collectionVariables.set('NON_EXISTING_CART_ID', pm.collectionVariables.get('NON_EXISTING_CART_ID') || '999999999');",
+          "pm.collectionVariables.set('NON_EXISTING_ORDER_ID', pm.collectionVariables.get('NON_EXISTING_ORDER_ID') || '999999999');"
         ]
       }
     }
@@ -1568,6 +1910,26 @@
     {
       "key": "INVENTORY_PRODUCT_ID",
       "value": ""
+    },
+    {
+      "key": "CART_ID",
+      "value": ""
+    },
+    {
+      "key": "ORDER_ID",
+      "value": ""
+    },
+    {
+      "key": "ORDER_NUMBER",
+      "value": ""
+    },
+    {
+      "key": "NON_EXISTING_CART_ID",
+      "value": "999999999"
+    },
+    {
+      "key": "NON_EXISTING_ORDER_ID",
+      "value": "999999999"
     }
   ]
 }

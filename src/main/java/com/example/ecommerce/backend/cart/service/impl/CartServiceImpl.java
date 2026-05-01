@@ -83,6 +83,20 @@ public class CartServiceImpl implements CartService {
                 .orElseGet(() -> cartMapper.toEmptyResponse(userId));
     }
 
+    @Override
+    @Transactional
+    public void clearCart(Long userId, Long cartId) {
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found: " + cartId));
+
+        if (!cart.getUserId().equals(userId)) {
+            throw new ResourceConflictException("Cart does not belong to current user: " + cartId);
+        }
+
+        cart.getItems().clear();
+        cartRepository.saveAndFlush(cart);
+    }
+
     private Cart createCart(Long userId) {
         return Cart.builder()
                 .userId(userId)

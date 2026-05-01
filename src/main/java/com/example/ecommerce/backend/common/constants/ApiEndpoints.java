@@ -26,4 +26,9 @@ public class ApiEndpoints {
     public static class Cart {
         public static final String BASE_CART = API_VERSION + "/cart";
     }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Order {
+        public static final String BASE_ORDER = API_VERSION + "/orders";
+    }
 }

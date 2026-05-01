@@ -30,4 +30,14 @@ public interface CartService {
      * @return current cart response, or an empty cart response when no cart exists
      */
     CartResponse getCart(Long userId);
+
+    /**
+     * Removes all items from a confirmed cart.
+     *
+     * @param userId owner user identifier
+     * @param cartId cart identifier
+     * @throws jakarta.persistence.EntityNotFoundException when cart is missing
+     * @throws com.example.ecommerce.backend.common.exception.ResourceConflictException when cart belongs to another user
+     */
+    void clearCart(Long userId, Long cartId);
 }

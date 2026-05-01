@@ -15,6 +15,16 @@ import java.util.Optional;
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Long> {
     /**
+     * Retrieves a cart by identifier with items eagerly loaded.
+     *
+     * @param id cart identifier
+     * @return matching cart when present
+     */
+    @Override
+    @EntityGraph(value = "Cart.withItems")
+    Optional<Cart> findById(Long id);
+
+    /**
      * Retrieves a cart by its owner user identifier with items eagerly loaded.
      *
      * @param userId owner user identifier
