@@ -49,6 +49,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 
+    // Payment Integration (Stripe SDK)
+    implementation 'com.stripe:stripe-java:24.9.0'
+
     // Lombok support for test sources.
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'

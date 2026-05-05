@@ -31,4 +31,9 @@ public class ApiEndpoints {
     public static class Order {
         public static final String BASE_ORDER = API_VERSION + "/orders";
     }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Payment {
+        public static final String BASE_PAYMENT = API_VERSION + "/payments";
+    }
 }

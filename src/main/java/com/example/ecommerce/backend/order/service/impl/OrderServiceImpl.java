@@ -8,6 +8,7 @@ import com.example.ecommerce.backend.common.exception.ResourceConflictException;
 import com.example.ecommerce.backend.inventory.entity.Inventory;
 import com.example.ecommerce.backend.inventory.repository.InventoryRepository;
 import com.example.ecommerce.backend.order.dto.request.CreateOrderRequest;
+import com.example.ecommerce.backend.order.dto.response.OrderCheckoutResponse;
 import com.example.ecommerce.backend.order.dto.response.OrderResponse;
 import com.example.ecommerce.backend.order.entity.Order;
 import com.example.ecommerce.backend.order.entity.OrderItem;
@@ -15,6 +16,8 @@ import com.example.ecommerce.backend.order.entity.OrderStatus;
 import com.example.ecommerce.backend.order.mapper.OrderMapper;
 import com.example.ecommerce.backend.order.repository.OrderRepository;
 import com.example.ecommerce.backend.order.service.OrderService;
+import com.example.ecommerce.backend.payment.dto.response.PaymentResponse;
+import com.example.ecommerce.backend.payment.service.PaymentService;
 import com.example.ecommerce.backend.product.entity.Product;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +32,9 @@ import java.util.UUID;
  * Implementation of {@link OrderService} for checkout and cancellation flows.
  *
  * <p>Business logic stays in the service layer: cart validation, inventory
- * reservation/release, immutable item snapshot creation, order persistence, and
- * cart clearing are coordinated in one transaction.</p>
+ * reservation/release, immutable item snapshot creation, order persistence,
+ * cart clearing, and checkout payment initiation are coordinated in one
+ * transaction.</p>
  *
  * @author Pial Kanti Samadder
  */
@@ -43,10 +47,11 @@ public class OrderServiceImpl implements OrderService {
     private final InventoryRepository inventoryRepository;
     private final CartService cartService;
     private final OrderMapper orderMapper;
+    private final PaymentService paymentService;
 
     @Override
     @Transactional
-    public OrderResponse placeOrder(Long userId, CreateOrderRequest request) {
+    public OrderCheckoutResponse placeOrder(Long userId, CreateOrderRequest request) {
         log.info("Starting checkout for userId={}, cartId={}", userId, request.cartId());
 
         Cart cart = cartRepository.findById(request.cartId())
@@ -74,9 +79,10 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalAmount(calculateTotalAmount(order));
         Order savedOrder = orderRepository.saveAndFlush(order);
         cartService.clearCart(userId, cart.getId());
+        PaymentResponse paymentResponse = paymentService.initiatePayment(savedOrder.getId());
 
         log.info("Checkout completed for userId={}, cartId={}, orderId={}", userId, cart.getId(), savedOrder.getId());
-        return orderMapper.toResponse(savedOrder);
+        return new OrderCheckoutResponse(orderMapper.toResponse(savedOrder), paymentResponse);
     }
 
     @Override

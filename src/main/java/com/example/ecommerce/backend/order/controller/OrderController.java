@@ -3,6 +3,7 @@ package com.example.ecommerce.backend.order.controller;
 import com.example.ecommerce.backend.common.constants.ApiEndpoints;
 import com.example.ecommerce.backend.common.dto.response.ApiResponse;
 import com.example.ecommerce.backend.order.dto.request.CreateOrderRequest;
+import com.example.ecommerce.backend.order.dto.response.OrderCheckoutResponse;
 import com.example.ecommerce.backend.order.dto.response.OrderResponse;
 import com.example.ecommerce.backend.order.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,14 +48,15 @@ public class OrderController {
     private final OrderService orderService;
 
     /**
-     * Checks out the current user's cart into a confirmed order.
+     * Checks out the current user's cart into a confirmed order and creates the
+     * Stripe payment session.
      *
      * @param request validated checkout payload
-     * @return response containing the confirmed order
+     * @return response containing the confirmed order and Stripe payment link
      */
     @Operation(
             summary = "Checkout cart",
-            description = "Creates a confirmed order from the current user's cart, reserves inventory, and clears the cart.",
+            description = "Creates a confirmed order from the current user's cart, reserves inventory, clears the cart, and returns a Stripe hosted Checkout URL for payment.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     description = "Checkout payload containing the cart identifier to confirm.",
@@ -77,7 +79,7 @@ public class OrderController {
                             description = "Order confirmed successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = OrderResponse.class)
+                                    schema = @Schema(implementation = OrderCheckoutResponse.class)
                             )
                     ),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -92,13 +94,13 @@ public class OrderController {
                     ),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "409",
-                            description = "Cart is empty, product is inactive, stock is insufficient, or cart belongs to another user",
+                            description = "Cart is empty, product is inactive, stock is insufficient, cart belongs to another user, or payment cannot be initiated",
                             content = @Content
                     )
             }
     )
     @PostMapping("/checkout")
-    public ResponseEntity<ApiResponse<OrderResponse>> checkout(
+    public ResponseEntity<ApiResponse<OrderCheckoutResponse>> checkout(
             @Valid @RequestBody CreateOrderRequest request) {
         return ResponseEntity.ok(ApiResponse.success(orderService.placeOrder(CURRENT_USER_ID, request)));
     }

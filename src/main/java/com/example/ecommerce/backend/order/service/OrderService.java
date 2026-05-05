@@ -1,26 +1,28 @@
 package com.example.ecommerce.backend.order.service;
 
 import com.example.ecommerce.backend.order.dto.request.CreateOrderRequest;
+import com.example.ecommerce.backend.order.dto.response.OrderCheckoutResponse;
 import com.example.ecommerce.backend.order.dto.response.OrderResponse;
 
 /**
  * Service interface for checkout and order lifecycle operations.
  *
  * <p>Order operations coordinate cart contents, product snapshots, inventory
- * reservations, and order persistence. Payment handling is intentionally
- * outside this service.</p>
+ * reservations, order persistence, and the post-checkout payment session
+ * returned to the client.</p>
  *
  * @author Pial Kanti Samadder
  */
 public interface OrderService {
     /**
-     * Converts a cart into a confirmed order and reserves inventory.
+     * Converts a cart into a confirmed order, reserves inventory, and creates
+     * the Stripe payment session for the order.
      *
      * @param userId owner user identifier
      * @param request checkout payload containing cart identifier
-     * @return confirmed order response
+     * @return checkout response containing the confirmed order and payment link
      */
-    OrderResponse placeOrder(Long userId, CreateOrderRequest request);
+    OrderCheckoutResponse placeOrder(Long userId, CreateOrderRequest request);
 
     /**
      * Cancels a confirmed order and releases reserved inventory.
