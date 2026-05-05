@@ -54,6 +54,12 @@ public class PaymentHistory extends BaseEntity implements Auditable {
     private PaymentStatus status;
 
     /**
+     * Timestamp after which the payment attempt is no longer valid.
+     */
+    @Column(name = "expires_at", nullable = false)
+    private LocalDateTime expiresAt;
+
+    /**
      * Timestamp when the payment record was created.
      */
     @Column(name = "created_at", nullable = false, updatable = false)

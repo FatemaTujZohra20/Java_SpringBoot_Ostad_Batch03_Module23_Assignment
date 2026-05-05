@@ -32,6 +32,9 @@ public record PaymentResponse(
         @Schema(description = "Current payment lifecycle status.", example = "INITIATED")
         PaymentStatus status,
 
+        @Schema(description = "Timestamp when the payment attempt expires.")
+        LocalDateTime expiresAt,
+
         @Schema(description = "Timestamp when the payment attempt was created.")
         LocalDateTime createdAt,
 

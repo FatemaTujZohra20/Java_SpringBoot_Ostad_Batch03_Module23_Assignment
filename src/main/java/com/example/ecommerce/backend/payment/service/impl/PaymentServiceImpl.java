@@ -7,6 +7,7 @@ import com.example.ecommerce.backend.order.entity.Order;
 import com.example.ecommerce.backend.order.entity.OrderItem;
 import com.example.ecommerce.backend.order.entity.OrderStatus;
 import com.example.ecommerce.backend.order.repository.OrderRepository;
+import com.example.ecommerce.backend.payment.config.PaymentExpirationProperties;
 import com.example.ecommerce.backend.payment.config.StripeConfig;
 import com.example.ecommerce.backend.payment.dto.response.PaymentResponse;
 import com.example.ecommerce.backend.payment.entity.PaymentHistory;
@@ -24,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * Stripe-backed implementation of {@link PaymentService}.
@@ -44,6 +47,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final InventoryRepository inventoryRepository;
     private final PaymentHistoryRepository paymentHistoryRepository;
     private final StripeConfig stripeConfig;
+    private final PaymentExpirationProperties paymentExpirationProperties;
 
     /**
      * Creates a Stripe Checkout Session for a confirmed order and stores the
@@ -60,10 +64,19 @@ public class PaymentServiceImpl implements PaymentService {
         Order order = findOrder(orderId);
         validatePayableOrder(order);
 
-        return paymentHistoryRepository
-                .findTopByOrderIdAndStatusOrderByCreatedAtDesc(orderId, PaymentStatus.INITIATED)
-                .map(this::toResponse)
-                .orElseGet(() -> createPayment(order));
+        Optional<PaymentHistory> latestInitiatedPayment = paymentHistoryRepository
+                .findTopByOrderIdAndStatusOrderByCreatedAtDesc(orderId, PaymentStatus.INITIATED);
+
+        if (latestInitiatedPayment.isPresent()) {
+            PaymentHistory paymentHistory = latestInitiatedPayment.get();
+            if (paymentHistory.getExpiresAt().isAfter(LocalDateTime.now())) {
+                return toResponse(paymentHistory);
+            }
+
+            cancelStaleInitiatedPayment(paymentHistory);
+        }
+
+        return createPayment(order);
     }
 
     /**
@@ -142,6 +155,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .sessionId(session.getId())
                     .paymentLink(session.getUrl())
                     .status(PaymentStatus.INITIATED)
+                    .expiresAt(LocalDateTime.now().plus(paymentExpirationProperties.getLifetime()))
                     .createdBy(order.getUserId())
                     .modifiedBy(order.getUserId())
                     .build();
@@ -152,6 +166,23 @@ public class PaymentServiceImpl implements PaymentService {
         } catch (StripeException exception) {
             log.error("Stripe payment initiation failed for orderId={}", order.getId(), exception);
             throw new ResourceConflictException("Unable to initiate payment. Please try again.");
+        }
+    }
+
+    private void cancelStaleInitiatedPayment(PaymentHistory paymentHistory) {
+        expireStripeSession(paymentHistory.getSessionId());
+        paymentHistory.setStatus(PaymentStatus.CANCELLED);
+        paymentHistory.setModifiedBy(paymentHistory.getOrder().getUserId());
+        paymentHistoryRepository.save(paymentHistory);
+        log.info("Expired initiated payment cancelled before creating a new attempt. paymentHistoryId={}, orderId={}",
+                paymentHistory.getId(), paymentHistory.getOrder().getId());
+    }
+
+    private void expireStripeSession(String sessionId) {
+        try {
+            Session.retrieve(sessionId).expire();
+        } catch (StripeException exception) {
+            log.warn("Unable to expire stale Stripe checkout session. sessionId={}", sessionId, exception);
         }
     }
 
@@ -246,6 +277,7 @@ public class PaymentServiceImpl implements PaymentService {
                 paymentHistory.getSessionId(),
                 paymentHistory.getPaymentLink(),
                 paymentHistory.getStatus(),
+                paymentHistory.getExpiresAt(),
                 paymentHistory.getCreatedAt(),
                 paymentHistory.getModifiedAt()
         );

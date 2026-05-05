@@ -15,6 +15,7 @@ import com.example.ecommerce.backend.order.entity.OrderItem;
 import com.example.ecommerce.backend.order.entity.OrderStatus;
 import com.example.ecommerce.backend.order.mapper.OrderMapper;
 import com.example.ecommerce.backend.order.repository.OrderRepository;
+import com.example.ecommerce.backend.order.service.OrderCancellationService;
 import com.example.ecommerce.backend.order.service.OrderService;
 import com.example.ecommerce.backend.payment.dto.response.PaymentResponse;
 import com.example.ecommerce.backend.payment.service.PaymentService;
@@ -25,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -48,6 +48,7 @@ public class OrderServiceImpl implements OrderService {
     private final CartService cartService;
     private final OrderMapper orderMapper;
     private final PaymentService paymentService;
+    private final OrderCancellationService orderCancellationService;
 
     @Override
     @Transactional
@@ -93,15 +94,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = findOrderWithItems(orderId);
         validateOrderOwnership(order, userId);
 
-        if (order.getStatus() != OrderStatus.CONFIRMED) {
-            log.warn("Order cancellation rejected for orderId={} because status={}", orderId, order.getStatus());
-            throw new ResourceConflictException("Only confirmed orders can be cancelled.");
-        }
-
-        order.getItems().forEach(item -> releaseInventory(item.getProductId(), item.getQuantity()));
-        order.setStatus(OrderStatus.CANCELLED);
-        order.setCancelledAt(LocalDateTime.now());
-        order.setModifiedBy(userId);
+        orderCancellationService.cancelConfirmedOrder(order, userId);
 
         Order savedOrder = orderRepository.saveAndFlush(order);
         log.info("Order cancellation completed for userId={}, orderId={}", userId, orderId);
@@ -161,20 +154,6 @@ public class OrderServiceImpl implements OrderService {
         }
 
         inventory.setReservedQuantity(inventory.getReservedQuantity() + quantity);
-        inventoryRepository.saveAndFlush(inventory);
-    }
-
-    private void releaseInventory(Long productId, Integer quantity) {
-        Inventory inventory = inventoryRepository.findByProductId(productId)
-                .orElseThrow(() -> new EntityNotFoundException("Inventory not found for product: " + productId));
-
-        if (quantity > inventory.getReservedQuantity()) {
-            log.warn("Cannot release inventory for productId={}, requested={}, reserved={}",
-                    productId, quantity, inventory.getReservedQuantity());
-            throw new ResourceConflictException("Cannot release more inventory than currently reserved.");
-        }
-
-        inventory.setReservedQuantity(inventory.getReservedQuantity() - quantity);
         inventoryRepository.saveAndFlush(inventory);
     }
 

@@ -4,6 +4,7 @@ CREATE TABLE payment_history (
     session_id VARCHAR(255) NOT NULL UNIQUE,
     payment_link VARCHAR(2048) NOT NULL,
     status VARCHAR(30) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL,
     modified_at TIMESTAMP NOT NULL,
     created_by BIGINT,
@@ -17,4 +18,5 @@ CREATE TABLE payment_history (
 
 CREATE INDEX idx_payment_history_order_id ON payment_history (order_id);
 CREATE INDEX idx_payment_history_status ON payment_history (status);
+CREATE INDEX idx_payment_history_status_expires_at ON payment_history (status, expires_at);
 CREATE INDEX idx_payment_history_order_status ON payment_history (order_id, status);

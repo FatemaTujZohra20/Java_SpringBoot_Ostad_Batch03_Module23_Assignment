@@ -8,3 +8,8 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+
+payment:
+  expiration:
+    lifetime: 5m
+    check-delay: 60s
