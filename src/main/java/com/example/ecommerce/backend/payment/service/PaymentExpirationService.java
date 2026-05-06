@@ -63,9 +63,12 @@ public class PaymentExpirationService {
         }
 
         if (hasNewerInitiatedPayment(paymentHistory)) {
+            expireStripeSession(paymentHistory.getSessionId());
+
             paymentHistory.setStatus(PaymentStatus.CANCELLED);
             paymentHistory.setModifiedBy(order.getUserId());
             paymentHistoryRepository.save(paymentHistory);
+
             log.info("Expired payment cancelled without cancelling order because a newer payment exists. paymentHistoryId={}, orderId={}",
                     paymentHistoryId, order.getId());
             return;
