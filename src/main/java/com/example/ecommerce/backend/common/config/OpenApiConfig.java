@@ -1,6 +1,8 @@
 package com.example.ecommerce.backend.common.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
@@ -17,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 public class OpenApiConfig {
     private static final String API_GROUP = "ecommerce-api";
     private static final String API_PATH_PATTERN = "/api/v1/**";
+    private static final String BEARER_AUTH = "bearerAuth";
 
     /**
      * Provides global metadata displayed in OpenAPI and Swagger UI.
@@ -26,6 +29,11 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI ecommerceOpenApi() {
         return new OpenAPI()
+                .components(new Components()
+                        .addSecuritySchemes(BEARER_AUTH, new SecurityScheme()
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")))
                 .info(new Info()
                         .title("Ecommerce Backend API")
                         .description("REST API documentation for ecommerce backend services.")

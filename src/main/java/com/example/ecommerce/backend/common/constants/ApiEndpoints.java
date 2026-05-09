@@ -36,4 +36,9 @@ public class ApiEndpoints {
     public static class Payment {
         public static final String BASE_PAYMENT = API_VERSION + "/payments";
     }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Auth {
+        public static final String BASE_AUTH = API_VERSION + "/auth";
+    }
 }

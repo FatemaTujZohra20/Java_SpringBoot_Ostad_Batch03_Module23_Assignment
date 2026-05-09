@@ -5,6 +5,7 @@ import jakarta.persistence.OptimisticLockException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -54,6 +55,28 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceConflictException.class)
     public ProblemDetail handleResourceConflictException(ResourceConflictException exception) {
         return problemDetail(HttpStatus.CONFLICT, "Resource conflict", exception.getMessage());
+    }
+
+    /**
+     * Handles authentication credential failures.
+     *
+     * @param exception authentication exception
+     * @return unauthorized response
+     */
+    @ExceptionHandler(AuthenticationException.class)
+    public ProblemDetail handleAuthenticationException(AuthenticationException exception) {
+        return problemDetail(HttpStatus.UNAUTHORIZED, "Authentication failed", "Invalid username or password.");
+    }
+
+    /**
+     * Handles invalid, expired, or revoked authentication tokens.
+     *
+     * @param exception invalid token exception
+     * @return unauthorized response
+     */
+    @ExceptionHandler(InvalidTokenException.class)
+    public ProblemDetail handleInvalidTokenException(InvalidTokenException exception) {
+        return problemDetail(HttpStatus.UNAUTHORIZED, "Invalid token", exception.getMessage());
     }
 
     /**
