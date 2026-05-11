@@ -1,5 +1,6 @@
 package com.example.ecommerce.backend.order.controller;
 
+import com.example.ecommerce.backend.auth.security.AuthenticatedUser;
 import com.example.ecommerce.backend.common.constants.ApiEndpoints;
 import com.example.ecommerce.backend.common.dto.response.ApiResponse;
 import com.example.ecommerce.backend.order.dto.request.CreateOrderRequest;
@@ -16,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,8 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
  * {@link ApiEndpoints.Order#BASE_ORDER} and wraps successful responses with the
  * common {@link ApiResponse} structure used by the API.</p>
  *
- * <p>The user identifier is temporarily hard-coded until authentication and a
- * user entity are introduced.</p>
+ * <p>The authenticated user is resolved from the Spring Security context.</p>
  *
  * @author Pial Kanti Samadder
  */
@@ -43,8 +44,6 @@ import org.springframework.web.bind.annotation.RestController;
         description = "Operations for checkout, order lookup, and cancellation"
 )
 public class OrderController {
-    private static final Long CURRENT_USER_ID = 1L;
-
     private final OrderService orderService;
 
     /**
@@ -102,7 +101,7 @@ public class OrderController {
     @PostMapping("/checkout")
     public ResponseEntity<ApiResponse<OrderCheckoutResponse>> checkout(
             @Valid @RequestBody CreateOrderRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(orderService.placeOrder(CURRENT_USER_ID, request)));
+        return ResponseEntity.ok(ApiResponse.success(orderService.placeOrder(currentUserId(), request)));
     }
 
     /**
@@ -139,7 +138,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponse>> cancelOrder(
             @Parameter(description = "Unique identifier of the order to cancel.", example = "1", required = true)
             @PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.success(orderService.cancelOrder(CURRENT_USER_ID, id)));
+        return ResponseEntity.ok(ApiResponse.success(orderService.cancelOrder(currentUserId(), id)));
     }
 
     /**
@@ -176,6 +175,13 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponse>> getOrder(
             @Parameter(description = "Unique identifier of the order.", example = "1", required = true)
             @PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.success(orderService.getOrder(CURRENT_USER_ID, id)));
+        return ResponseEntity.ok(ApiResponse.success(orderService.getOrder(currentUserId(), id)));
+    }
+
+    private Long currentUserId() {
+        AuthenticatedUser user = (AuthenticatedUser) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        return user.id();
     }
 }

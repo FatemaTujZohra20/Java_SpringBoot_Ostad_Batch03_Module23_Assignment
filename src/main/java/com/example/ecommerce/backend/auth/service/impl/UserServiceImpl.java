@@ -2,6 +2,7 @@ package com.example.ecommerce.backend.auth.service.impl;
 
 import com.example.ecommerce.backend.auth.entity.User;
 import com.example.ecommerce.backend.auth.repository.UserRepository;
+import com.example.ecommerce.backend.auth.security.AuthenticatedUser;
 import com.example.ecommerce.backend.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.DisabledException;
@@ -28,7 +29,8 @@ public class UserServiceImpl implements UserService {
             throw new DisabledException("User account is inactive.");
         }
 
-        return new org.springframework.security.core.userdetails.User(
+        return new AuthenticatedUser(
+                user.getId(),
                 user.getUsername(),
                 user.getPassword(),
                 List.of(new SimpleGrantedAuthority(DEFAULT_AUTHORITY)));

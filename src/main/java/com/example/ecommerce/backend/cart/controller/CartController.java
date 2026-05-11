@@ -3,6 +3,7 @@ package com.example.ecommerce.backend.cart.controller;
 import com.example.ecommerce.backend.cart.dto.request.CartItemAddRequest;
 import com.example.ecommerce.backend.cart.dto.response.CartResponse;
 import com.example.ecommerce.backend.cart.service.CartService;
+import com.example.ecommerce.backend.auth.security.AuthenticatedUser;
 import com.example.ecommerce.backend.common.constants.ApiEndpoints;
 import com.example.ecommerce.backend.common.dto.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,8 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  * {@link ApiEndpoints.Cart#BASE_CART} and wraps successful responses with the
  * common {@link ApiResponse} structure used by the API.</p>
  *
- * <p>The user identifier is temporarily hard-coded until authentication and a
- * user entity are introduced.</p>
+ * <p>The authenticated user is resolved from the Spring Security context.</p>
  *
  * @author Pial Kanti Samadder
  */
@@ -40,8 +41,6 @@ import org.springframework.web.bind.annotation.RestController;
         description = "Operations for managing the current user's shopping cart"
 )
 public class CartController {
-    private static final Long CURRENT_USER_ID = 1L;
-
     private final CartService cartService;
 
     /**
@@ -101,7 +100,7 @@ public class CartController {
     @PostMapping("/items")
     public ResponseEntity<ApiResponse<CartResponse>> addItem(
             @Valid @RequestBody CartItemAddRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(cartService.addItem(CURRENT_USER_ID, request)));
+        return ResponseEntity.ok(ApiResponse.success(cartService.addItem(currentUserId(), request)));
     }
 
     /**
@@ -125,6 +124,13 @@ public class CartController {
     )
     @GetMapping
     public ResponseEntity<ApiResponse<CartResponse>> getCart() {
-        return ResponseEntity.ok(ApiResponse.success(cartService.getCart(CURRENT_USER_ID)));
+        return ResponseEntity.ok(ApiResponse.success(cartService.getCart(currentUserId())));
+    }
+
+    private Long currentUserId() {
+        AuthenticatedUser user = (AuthenticatedUser) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        return user.id();
     }
 }
