@@ -2,11 +2,226 @@
   "info": {
     "_postman_id": "e34907cf-2ce3-4474-b845-a2d153980177",
     "name": "Ecommerce Backend",
-    "description": "Professional Postman collection for testing and demoing the ecommerce backend endpoints. Requests are grouped by feature package and can be run in order for category, product, and inventory flows.",
+    "description": "Professional Postman collection for testing and demoing the ecommerce backend endpoints. Requests are grouped by feature package and can be run for authentication, category, product, inventory, cart, and order flows.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "3537602"
   },
   "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const uniqueSuffix = Date.now();",
+                  "pm.collectionVariables.set('AUTH_FIRST_NAME', 'Pial');",
+                  "pm.collectionVariables.set('AUTH_LAST_NAME', 'Samadder');",
+                  "pm.collectionVariables.set('AUTH_USERNAME', `pial_${uniqueSuffix}`);",
+                  "pm.collectionVariables.set('AUTH_EMAIL', `pial_${uniqueSuffix}@example.com`);",
+                  "pm.collectionVariables.set('AUTH_PHONE_NUMBER', '+8801700000000');",
+                  "pm.collectionVariables.set('AUTH_PASSWORD', 'StrongPass123');"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.data && response.data.id) {",
+                  "    pm.collectionVariables.set('AUTH_USER_ID', response.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/register",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Registers a new active user account. This endpoint is public and does not require a bearer token.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"{{AUTH_FIRST_NAME}}\",\n  \"lastName\": \"{{AUTH_LAST_NAME}}\",\n  \"username\": \"{{AUTH_USERNAME}}\",\n  \"email\": \"{{AUTH_EMAIL}}\",\n  \"phoneNumber\": \"{{AUTH_PHONE_NUMBER}}\",\n  \"password\": \"{{AUTH_PASSWORD}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.data) {",
+                  "    pm.collectionVariables.set('ACCESS_TOKEN', response.data.accessToken);",
+                  "    pm.collectionVariables.set('REFRESH_TOKEN', response.data.refreshToken);",
+                  "    pm.collectionVariables.set('TOKEN_TYPE', response.data.tokenType || 'Bearer');",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/login",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Authenticates a user and stores the returned access and refresh tokens for private endpoints.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{AUTH_USERNAME}}\",\n  \"password\": \"{{AUTH_PASSWORD}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.data) {",
+                  "    pm.collectionVariables.set('ACCESS_TOKEN', response.data.accessToken);",
+                  "    pm.collectionVariables.set('REFRESH_TOKEN', response.data.refreshToken);",
+                  "    pm.collectionVariables.set('TOKEN_TYPE', response.data.tokenType || 'Bearer');",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/refresh",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            },
+            "description": "Rotates the refresh token and stores the newly returned access and refresh tokens. This endpoint is public.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{REFRESH_TOKEN}}\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout User",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/logout",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "Logs out the authenticated user by revoking the submitted refresh token and blacklisting the active access token.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{REFRESH_TOKEN}}\"\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
     {
       "name": "Category",
       "item": [
@@ -52,6 +267,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "body": {
@@ -94,6 +313,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -159,6 +382,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "body": {
@@ -201,6 +428,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -255,6 +486,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "body": {
@@ -298,6 +533,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -344,6 +583,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -386,7 +629,12 @@
               ],
               "request": {
                 "method": "DELETE",
-                "header": [],
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
+                  }
+                ],
                 "url": {
                   "raw": "{{BASE_URL}}/api/v1/categories/{{CATEGORY_ID}}",
                   "host": [
@@ -433,6 +681,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "body": {
@@ -475,6 +727,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -518,6 +774,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "body": {
@@ -561,6 +821,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -632,6 +896,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -662,6 +930,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -716,6 +988,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -746,6 +1022,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -789,6 +1069,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -828,7 +1112,12 @@
               ],
               "request": {
                 "method": "DELETE",
-                "header": [],
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
+                  }
+                ],
                 "url": {
                   "raw": "{{BASE_URL}}/api/v1/products/{{PRODUCT_ID}}",
                   "host": [
@@ -863,6 +1152,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -897,6 +1190,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -927,6 +1224,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -958,6 +1259,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -993,6 +1298,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -1065,6 +1374,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -1095,6 +1408,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -1126,6 +1443,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -1160,6 +1481,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -1196,6 +1521,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -1232,6 +1561,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -1268,6 +1601,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -1309,6 +1646,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -1343,6 +1684,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -1373,6 +1718,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -1404,6 +1753,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -1440,6 +1793,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -1476,6 +1833,10 @@
                   {
                     "key": "Accept",
                     "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ACCESS_TOKEN}}"
                   }
                 ],
                 "url": {
@@ -1545,6 +1906,10 @@
               {
                 "key": "Accept",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
               }
             ],
             "url": {
@@ -1576,6 +1941,10 @@
               {
                 "key": "Accept",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
               }
             ],
             "url": {
@@ -1606,6 +1975,10 @@
               {
                 "key": "Accept",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
               }
             ],
             "url": {
@@ -1673,6 +2046,10 @@
               {
                 "key": "Accept",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
               }
             ],
             "url": {
@@ -1718,6 +2095,10 @@
               {
                 "key": "Accept",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
               }
             ],
             "url": {
@@ -1759,6 +2140,10 @@
               {
                 "key": "Accept",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
               }
             ],
             "url": {
@@ -1791,6 +2176,10 @@
               {
                 "key": "Accept",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
               }
             ],
             "url": {
@@ -1822,6 +2211,10 @@
               {
                 "key": "Accept",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ACCESS_TOKEN}}"
               }
             ],
             "url": {
@@ -1930,6 +2323,46 @@
     {
       "key": "NON_EXISTING_ORDER_ID",
       "value": "999999999"
+    },
+    {
+      "key": "AUTH_USER_ID",
+      "value": ""
+    },
+    {
+      "key": "AUTH_FIRST_NAME",
+      "value": "Pial"
+    },
+    {
+      "key": "AUTH_LAST_NAME",
+      "value": "Samadder"
+    },
+    {
+      "key": "AUTH_USERNAME",
+      "value": ""
+    },
+    {
+      "key": "AUTH_EMAIL",
+      "value": ""
+    },
+    {
+      "key": "AUTH_PHONE_NUMBER",
+      "value": "+8801700000000"
+    },
+    {
+      "key": "AUTH_PASSWORD",
+      "value": "StrongPass123"
+    },
+    {
+      "key": "ACCESS_TOKEN",
+      "value": ""
+    },
+    {
+      "key": "REFRESH_TOKEN",
+      "value": ""
+    },
+    {
+      "key": "TOKEN_TYPE",
+      "value": "Bearer"
     }
   ]
 }
