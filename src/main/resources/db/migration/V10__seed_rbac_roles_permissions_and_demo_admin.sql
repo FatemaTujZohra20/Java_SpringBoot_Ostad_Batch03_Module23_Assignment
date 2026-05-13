@@ -91,7 +91,7 @@ VALUES (
     'Admin',
     'admin',
     'admin@example.com',
-    '$2a$10$/RSGnoe/2zY7dlSIQ7.ff.Y0Dr9V3/R2kkwhvOm0sptKz562KlIE6',
+    '$2a$10$KVRXQyQb86Aza2PV.4K9mOPxo4waXjUk5mGTsy6QtvVDdCzy6ykk6', --- password: StrongPass123
     NULL,
     TRUE,
     NOW(),

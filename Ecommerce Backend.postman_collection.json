@@ -3340,7 +3340,7 @@
     },
     {
       "key": "ADMIN_PASSWORD",
-      "value": "admin@123"
+      "value": "StrongPass123"
     },
     {
       "key": "ADMIN_ACCESS_TOKEN",
