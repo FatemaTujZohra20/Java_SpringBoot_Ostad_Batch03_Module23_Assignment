@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -99,6 +100,7 @@ public class OrderController {
             }
     )
     @PostMapping("/checkout")
+    @PreAuthorize("@cartSecurityService.canAccessCart(#request.cartId(), authentication)")
     public ResponseEntity<ApiResponse<OrderCheckoutResponse>> checkout(
             @Valid @RequestBody CreateOrderRequest request) {
         return ResponseEntity.ok(ApiResponse.success(orderService.placeOrder(currentUserId(), request)));
@@ -135,6 +137,7 @@ public class OrderController {
             }
     )
     @PostMapping("/{id}/cancel")
+    @PreAuthorize("@orderSecurityService.canAccessOrder(#id, authentication)")
     public ResponseEntity<ApiResponse<OrderResponse>> cancelOrder(
             @Parameter(description = "Unique identifier of the order to cancel.", example = "1", required = true)
             @PathVariable Long id) {
@@ -172,6 +175,7 @@ public class OrderController {
             }
     )
     @GetMapping("/{id}")
+    @PreAuthorize("@orderSecurityService.canAccessOrder(#id, authentication)")
     public ResponseEntity<ApiResponse<OrderResponse>> getOrder(
             @Parameter(description = "Unique identifier of the order.", example = "1", required = true)
             @PathVariable Long id) {

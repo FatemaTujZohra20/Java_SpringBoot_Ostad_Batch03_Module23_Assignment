@@ -41,4 +41,21 @@ public interface OrderService {
      * @return matching order response
      */
     OrderResponse getOrder(Long userId, Long orderId);
+
+    /**
+     * Retrieves any order for administrative or support workflows.
+     *
+     * @param orderId order identifier
+     * @return matching order response
+     */
+    OrderResponse getOrderForAdministration(Long orderId);
+
+    /**
+     * Cancels any confirmed order for administrative or support workflows.
+     *
+     * @param actorUserId authenticated administrator or support user identifier
+     * @param orderId order identifier
+     * @return cancelled order response
+     */
+    OrderResponse cancelOrderForAdministration(Long actorUserId, Long orderId);
 }

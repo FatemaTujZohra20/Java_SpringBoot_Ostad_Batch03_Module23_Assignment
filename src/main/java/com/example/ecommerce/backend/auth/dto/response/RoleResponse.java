@@ -4,19 +4,16 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
- * Response payload containing safe user account details.
+ * Response payload containing role details and assigned permissions.
  *
  * @author Pial Kanti Samadder
  */
-public record UserResponse(
+public record RoleResponse(
         Long id,
-        String firstName,
-        String lastName,
-        String username,
-        String email,
-        String phoneNumber,
-        Boolean isActive,
-        Set<String> roles,
+        String name,
+        String code,
+        String description,
+        Set<String> permissions,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt,
         Long createdBy,

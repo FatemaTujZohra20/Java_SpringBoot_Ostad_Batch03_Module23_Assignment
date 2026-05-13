@@ -5,6 +5,7 @@ import jakarta.persistence.OptimisticLockException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -66,6 +67,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ProblemDetail handleAuthenticationException(AuthenticationException exception) {
         return problemDetail(HttpStatus.UNAUTHORIZED, "Authentication failed", "Invalid username or password.");
+    }
+
+    /**
+     * Handles authorization failures from method-level security checks.
+     *
+     * @param exception access denied exception
+     * @return forbidden response
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ProblemDetail handleAccessDeniedException(AccessDeniedException exception) {
+        return problemDetail(HttpStatus.FORBIDDEN, "Access denied", "You do not have permission to perform this action.");
     }
 
     /**

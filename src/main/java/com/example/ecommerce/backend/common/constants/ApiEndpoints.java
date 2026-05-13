@@ -41,4 +41,16 @@ public class ApiEndpoints {
     public static class Auth {
         public static final String BASE_AUTH = API_VERSION + "/auth";
     }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class Admin {
+        public static final String BASE_ADMIN = API_VERSION + "/admin";
+        public static final String BASE_ADMIN_PRODUCTS = BASE_ADMIN + "/products";
+        public static final String BASE_ADMIN_CATEGORIES = BASE_ADMIN + "/categories";
+        public static final String BASE_ADMIN_INVENTORY = BASE_ADMIN + "/inventory";
+        public static final String BASE_ADMIN_ORDERS = BASE_ADMIN + "/orders";
+        public static final String BASE_ADMIN_ROLES = BASE_ADMIN + "/roles";
+        public static final String BASE_ADMIN_PERMISSIONS = BASE_ADMIN + "/permissions";
+        public static final String BASE_ADMIN_USERS = BASE_ADMIN + "/users";
+    }
 }

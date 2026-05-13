@@ -1,7 +1,10 @@
 package com.example.ecommerce.backend.auth.repository;
 
 import com.example.ecommerce.backend.auth.entity.User;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -19,7 +22,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @param username unique account username
      * @return matching user when present
      */
+    @EntityGraph(attributePaths = {"roles", "roles.permissions"})
     Optional<User> findByUsername(String username);
+
+    /**
+     * Finds a user by identifier with assigned roles loaded.
+     *
+     * @param id user identifier
+     * @return matching user when present
+     */
+    @EntityGraph(attributePaths = {"roles", "roles.permissions"})
+    @Query("select user from User user where user.id = :id")
+    Optional<User> findWithRolesById(@Param("id") Long id);
 
     /**
      * Checks whether a username is already used.

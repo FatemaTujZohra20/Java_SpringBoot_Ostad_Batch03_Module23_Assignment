@@ -14,6 +14,7 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -25,6 +26,10 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
+    private static final String ROLE_PREFIX = "ROLE_";
+    private static final String ROLES_CLAIM = "roles";
+    private static final String PERMISSIONS_CLAIM = "permissions";
+
     private final JwtProperties jwtProperties;
 
     @Override
@@ -32,6 +37,8 @@ public class JwtServiceImpl implements JwtService {
         Instant now = Instant.now();
         return Jwts.builder()
                 .subject(userDetails.getUsername())
+                .claim(ROLES_CLAIM, extractRoles(userDetails))
+                .claim(PERMISSIONS_CLAIM, extractPermissions(userDetails))
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(jwtProperties.expiration())))
                 .signWith(getSigningKey())
@@ -86,5 +93,24 @@ public class JwtServiceImpl implements JwtService {
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(jwtProperties.signingKey().getBytes(StandardCharsets.UTF_8));
+    }
+
+    private List<String> extractRoles(UserDetails userDetails) {
+        return userDetails.getAuthorities()
+                .stream()
+                .map(authority -> authority.getAuthority())
+                .filter(authority -> authority.startsWith(ROLE_PREFIX))
+                .map(authority -> authority.substring(ROLE_PREFIX.length()))
+                .sorted()
+                .toList();
+    }
+
+    private List<String> extractPermissions(UserDetails userDetails) {
+        return userDetails.getAuthorities()
+                .stream()
+                .map(authority -> authority.getAuthority())
+                .filter(authority -> !authority.startsWith(ROLE_PREFIX))
+                .sorted()
+                .toList();
     }
 }

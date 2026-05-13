@@ -109,6 +109,25 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toResponse(order);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public OrderResponse getOrderForAdministration(Long orderId) {
+        return orderMapper.toResponse(findOrderWithItems(orderId));
+    }
+
+    @Override
+    @Transactional
+    public OrderResponse cancelOrderForAdministration(Long actorUserId, Long orderId) {
+        log.info("Starting administrative order cancellation for actorUserId={}, orderId={}", actorUserId, orderId);
+
+        Order order = findOrderWithItems(orderId);
+        orderCancellationService.cancelConfirmedOrder(order, actorUserId);
+
+        Order savedOrder = orderRepository.saveAndFlush(order);
+        log.info("Administrative order cancellation completed for actorUserId={}, orderId={}", actorUserId, orderId);
+        return orderMapper.toResponse(savedOrder);
+    }
+
     private Order findOrderWithItems(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found: " + orderId));

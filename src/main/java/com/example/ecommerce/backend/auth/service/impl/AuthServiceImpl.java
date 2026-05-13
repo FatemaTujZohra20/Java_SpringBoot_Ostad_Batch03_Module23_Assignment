@@ -6,11 +6,14 @@ import com.example.ecommerce.backend.auth.dto.request.RefreshTokenRequest;
 import com.example.ecommerce.backend.auth.dto.request.RegisterRequest;
 import com.example.ecommerce.backend.auth.dto.response.AuthResponse;
 import com.example.ecommerce.backend.auth.dto.response.UserResponse;
+import com.example.ecommerce.backend.auth.entity.Role;
 import com.example.ecommerce.backend.auth.entity.RefreshToken;
 import com.example.ecommerce.backend.auth.entity.User;
+import com.example.ecommerce.backend.auth.enums.RoleCode;
 import com.example.ecommerce.backend.common.exception.InvalidTokenException;
 import com.example.ecommerce.backend.auth.mapper.UserMapper;
 import com.example.ecommerce.backend.auth.repository.RefreshTokenRepository;
+import com.example.ecommerce.backend.auth.repository.RoleRepository;
 import com.example.ecommerce.backend.auth.repository.UserRepository;
 import com.example.ecommerce.backend.auth.util.TokenHashUtil;
 import com.example.ecommerce.backend.auth.service.AuthService;
@@ -49,6 +52,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserDetailsService userDetailsService;
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final JwtService jwtService;
     private final TokenBlacklistService tokenBlacklistService;
@@ -68,6 +72,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setIsActive(Boolean.TRUE);
+        user.getRoles().add(defaultCustomerRole());
         return userMapper.toResponse(userRepository.save(user));
     }
 
@@ -134,6 +139,11 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return refreshToken;
+    }
+
+    private Role defaultCustomerRole() {
+        return roleRepository.findByCode(RoleCode.CUSTOMER.name())
+                .orElseThrow(() -> new EntityNotFoundException("Default role not found: " + RoleCode.CUSTOMER.name()));
     }
 
     private String createRefreshToken(User user) {

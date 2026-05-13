@@ -4,11 +4,16 @@ import com.example.ecommerce.backend.common.entity.Auditable;
 import com.example.ecommerce.backend.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Application user account used for authentication.
@@ -65,6 +70,17 @@ public class User extends BaseEntity implements Auditable {
      */
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
+
+    /**
+     * Roles assigned to this user for authorization.
+     */
+    @ManyToMany
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
     /**
      * Timestamp when the user account was created.
