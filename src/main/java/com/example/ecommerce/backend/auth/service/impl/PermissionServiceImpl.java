@@ -3,6 +3,7 @@ package com.example.ecommerce.backend.auth.service.impl;
 import com.example.ecommerce.backend.auth.dto.request.PermissionRequest;
 import com.example.ecommerce.backend.auth.dto.response.PermissionResponse;
 import com.example.ecommerce.backend.auth.entity.Permission;
+import com.example.ecommerce.backend.auth.enums.PermissionCode;
 import com.example.ecommerce.backend.auth.repository.PermissionRepository;
 import com.example.ecommerce.backend.auth.service.PermissionService;
 import com.example.ecommerce.backend.common.exception.ResourceConflictException;
@@ -42,7 +43,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     @Transactional
     public PermissionResponse create(PermissionRequest request) {
-        String code = normalizeCode(request.code());
+        PermissionCode code = request.code();
         if (permissionRepository.existsByCode(code)) {
             throw new ResourceConflictException("Permission with code '" + code + "' already exists.");
         }
@@ -58,7 +59,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Transactional
     public PermissionResponse update(Long id, PermissionRequest request) {
         Permission permission = getPermission(id);
-        String code = normalizeCode(request.code());
+        PermissionCode code = request.code();
         permissionRepository.findByCode(code)
                 .filter(existing -> !existing.getId().equals(id))
                 .ifPresent(existing -> {
@@ -85,15 +86,11 @@ public class PermissionServiceImpl implements PermissionService {
                 .orElseThrow(() -> new EntityNotFoundException("Permission not found: " + id));
     }
 
-    private String normalizeCode(String code) {
-        return code.trim().toUpperCase();
-    }
-
     private PermissionResponse toResponse(Permission permission) {
         return new PermissionResponse(
                 permission.getId(),
                 permission.getName(),
-                permission.getCode(),
+                permission.getCode().name(),
                 permission.getDescription(),
                 permission.getCreatedAt(),
                 permission.getModifiedAt(),

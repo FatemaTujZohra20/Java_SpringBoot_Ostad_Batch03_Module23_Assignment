@@ -1,9 +1,12 @@
 package com.example.ecommerce.backend.auth.entity;
 
+import com.example.ecommerce.backend.auth.enums.RoleCode;
 import com.example.ecommerce.backend.common.entity.Auditable;
 import com.example.ecommerce.backend.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -33,7 +36,8 @@ public class Role extends BaseEntity implements Auditable {
     private String name;
 
     @Column(nullable = false, unique = true, length = 80)
-    private String code;
+    @Enumerated(EnumType.STRING)
+    private RoleCode code;
 
     @Column(length = 500)
     private String description;

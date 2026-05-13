@@ -1,9 +1,12 @@
 package com.example.ecommerce.backend.auth.entity;
 
+import com.example.ecommerce.backend.auth.enums.PermissionCode;
 import com.example.ecommerce.backend.common.entity.Auditable;
 import com.example.ecommerce.backend.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,7 +30,8 @@ public class Permission extends BaseEntity implements Auditable {
     private String name;
 
     @Column(nullable = false, unique = true, length = 100)
-    private String code;
+    @Enumerated(EnumType.STRING)
+    private PermissionCode code;
 
     @Column(length = 500)
     private String description;

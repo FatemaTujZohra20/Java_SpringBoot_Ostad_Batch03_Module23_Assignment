@@ -5,6 +5,7 @@ import com.example.ecommerce.backend.auth.dto.response.PermissionResponse;
 import com.example.ecommerce.backend.auth.dto.response.RoleResponse;
 import com.example.ecommerce.backend.auth.entity.Permission;
 import com.example.ecommerce.backend.auth.entity.Role;
+import com.example.ecommerce.backend.auth.enums.RoleCode;
 import com.example.ecommerce.backend.auth.repository.PermissionRepository;
 import com.example.ecommerce.backend.auth.repository.RoleRepository;
 import com.example.ecommerce.backend.auth.service.RoleService;
@@ -51,7 +52,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional
     public RoleResponse create(RoleRequest request) {
-        String code = normalizeCode(request.code());
+        RoleCode code = request.code();
         if (roleRepository.existsByCode(code)) {
             throw new ResourceConflictException("Role with code '" + code + "' already exists.");
         }
@@ -67,7 +68,7 @@ public class RoleServiceImpl implements RoleService {
     @Transactional
     public RoleResponse update(Long id, RoleRequest request) {
         Role role = getRoleWithPermissions(id);
-        String code = normalizeCode(request.code());
+        RoleCode code = request.code();
         roleRepository.findByCode(code)
                 .filter(existing -> !existing.getId().equals(id))
                 .ifPresent(existing -> {
@@ -127,19 +128,16 @@ public class RoleServiceImpl implements RoleService {
                 .orElseThrow(() -> new EntityNotFoundException("Permission not found: " + id));
     }
 
-    private String normalizeCode(String code) {
-        return code.trim().toUpperCase();
-    }
-
     private RoleResponse toResponse(Role role) {
         Set<String> permissions = role.getPermissions()
                 .stream()
                 .map(Permission::getCode)
+                .map(Enum::name)
                 .collect(Collectors.toCollection(java.util.TreeSet::new));
         return new RoleResponse(
                 role.getId(),
                 role.getName(),
-                role.getCode(),
+                role.getCode().name(),
                 role.getDescription(),
                 permissions,
                 role.getCreatedAt(),
@@ -152,7 +150,7 @@ public class RoleServiceImpl implements RoleService {
         return new PermissionResponse(
                 permission.getId(),
                 permission.getName(),
-                permission.getCode(),
+                permission.getCode().name(),
                 permission.getDescription(),
                 permission.getCreatedAt(),
                 permission.getModifiedAt(),

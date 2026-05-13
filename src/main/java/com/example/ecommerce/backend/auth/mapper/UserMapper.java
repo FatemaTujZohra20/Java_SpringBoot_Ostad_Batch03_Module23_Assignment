@@ -46,6 +46,7 @@ public interface UserMapper {
         return user.getRoles()
                 .stream()
                 .map(Role::getCode)
+                .map(Enum::name)
                 .collect(Collectors.toCollection(java.util.TreeSet::new));
     }
 }

@@ -50,10 +50,11 @@ public class UserServiceImpl implements UserService {
     private Set<SimpleGrantedAuthority> mapAuthorities(User user) {
         Set<SimpleGrantedAuthority> authorities = new LinkedHashSet<>();
         for (Role role : user.getRoles()) {
-            authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + role.getCode()));
+            authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + role.getCode().name()));
             role.getPermissions()
                     .stream()
                     .map(Permission::getCode)
+                    .map(Enum::name)
                     .map(SimpleGrantedAuthority::new)
                     .forEach(authorities::add);
         }

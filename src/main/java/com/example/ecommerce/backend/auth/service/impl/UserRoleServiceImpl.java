@@ -81,11 +81,12 @@ public class UserRoleServiceImpl implements UserRoleService {
         Set<String> permissions = role.getPermissions()
                 .stream()
                 .map(Permission::getCode)
+                .map(Enum::name)
                 .collect(Collectors.toCollection(java.util.TreeSet::new));
         return new RoleResponse(
                 role.getId(),
                 role.getName(),
-                role.getCode(),
+                role.getCode().name(),
                 role.getDescription(),
                 permissions,
                 role.getCreatedAt(),

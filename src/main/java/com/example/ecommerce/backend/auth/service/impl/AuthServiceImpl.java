@@ -142,7 +142,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private Role defaultCustomerRole() {
-        return roleRepository.findByCode(RoleCode.CUSTOMER.name())
+        return roleRepository.findByCode(RoleCode.CUSTOMER)
                 .orElseThrow(() -> new EntityNotFoundException("Default role not found: " + RoleCode.CUSTOMER.name()));
     }
 
