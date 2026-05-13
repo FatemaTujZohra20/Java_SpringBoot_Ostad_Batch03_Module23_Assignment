@@ -50,7 +50,7 @@ public class AdminProductController {
      */
     @Operation(
             summary = "Create product",
-            description = "Requires PRODUCT_CREATE permission.",
+            description = "Requires PERMISSION_PRODUCT_CREATE permission.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(
@@ -84,7 +84,7 @@ public class AdminProductController {
      * @param request product update payload
      * @return updated product response
      */
-    @Operation(summary = "Update product", description = "Requires PRODUCT_UPDATE permission.")
+    @Operation(summary = "Update product", description = "Requires PERMISSION_PRODUCT_UPDATE permission.")
     @PutMapping("/{id}")
     @PreAuthorize(AuthorizationExpressions.HAS_PRODUCT_UPDATE)
     public ResponseEntity<ApiResponse<ProductResponse>> updateProduct(
@@ -99,7 +99,7 @@ public class AdminProductController {
      * @param id product identifier
      * @return empty response
      */
-    @Operation(summary = "Delete product", description = "Requires PRODUCT_DELETE permission.")
+    @Operation(summary = "Delete product", description = "Requires PERMISSION_PRODUCT_DELETE permission.")
     @DeleteMapping("/{id}")
     @PreAuthorize(AuthorizationExpressions.HAS_PRODUCT_DELETE)
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {

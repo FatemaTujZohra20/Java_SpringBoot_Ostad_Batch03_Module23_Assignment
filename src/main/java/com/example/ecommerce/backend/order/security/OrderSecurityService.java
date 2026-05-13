@@ -20,9 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OrderSecurityService {
     private static final String ROLE_ADMIN = "ROLE_ADMIN";
-    private static final String ORDER_READ = "ORDER_READ";
-    private static final String ORDER_CANCEL = "ORDER_CANCEL";
-    private static final String ORDER_UPDATE = "ORDER_UPDATE";
+    private static final String ORDER_READ = "PERMISSION_ORDER_READ";
+    private static final String ORDER_CANCEL = "PERMISSION_ORDER_CANCEL";
+    private static final String ORDER_UPDATE = "PERMISSION_ORDER_UPDATE";
 
     private final OrderRepository orderRepository;
 

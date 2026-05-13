@@ -90,7 +90,7 @@ public class AdminPermissionController {
                             examples = @ExampleObject(value = """
                                     {
                                       "name": "Create Product",
-                                      "code": "PRODUCT_CREATE",
+                                      "code": "PERMISSION_PRODUCT_CREATE",
                                       "description": "Allows creation of product catalog records."
                                     }
                                     """)

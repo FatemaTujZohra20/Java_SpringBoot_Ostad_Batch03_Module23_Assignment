@@ -53,7 +53,7 @@ public class AdminRoleController {
      * @param size page size
      * @return paginated role response
      */
-    @Operation(summary = "List roles", description = "Requires ROLE_READ permission.")
+    @Operation(summary = "List roles", description = "Requires PERMISSION_ROLE_READ permission.")
     @GetMapping
     @PreAuthorize(AuthorizationExpressions.HAS_ADMIN_AND_ROLE_READ)
     public ResponseEntity<ApiResponse<PaginatedResponse<RoleResponse>>> listRoles(
@@ -69,7 +69,7 @@ public class AdminRoleController {
      * @param id role identifier
      * @return matching role
      */
-    @Operation(summary = "Get role by ID", description = "Requires ROLE_READ permission.")
+    @Operation(summary = "Get role by ID", description = "Requires PERMISSION_ROLE_READ permission.")
     @GetMapping("/{id}")
     @PreAuthorize(AuthorizationExpressions.HAS_ADMIN_AND_ROLE_READ)
     public ResponseEntity<ApiResponse<RoleResponse>> getRole(@PathVariable Long id) {
@@ -84,7 +84,7 @@ public class AdminRoleController {
      */
     @Operation(
             summary = "Create role",
-            description = "Requires ROLE_CREATE permission.",
+            description = "Requires PERMISSION_ROLE_CREATE permission.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(
@@ -113,7 +113,7 @@ public class AdminRoleController {
      * @param request role payload
      * @return updated role
      */
-    @Operation(summary = "Update role", description = "Requires ROLE_UPDATE permission.")
+    @Operation(summary = "Update role", description = "Requires PERMISSION_ROLE_UPDATE permission.")
     @PutMapping("/{id}")
     @PreAuthorize(AuthorizationExpressions.HAS_ADMIN_AND_ROLE_UPDATE)
     public ResponseEntity<ApiResponse<RoleResponse>> updateRole(
@@ -128,7 +128,7 @@ public class AdminRoleController {
      * @param id role identifier
      * @return empty response
      */
-    @Operation(summary = "Delete role", description = "Requires ROLE_DELETE permission.")
+    @Operation(summary = "Delete role", description = "Requires PERMISSION_ROLE_DELETE permission.")
     @DeleteMapping("/{id}")
     @PreAuthorize(AuthorizationExpressions.HAS_ADMIN_AND_ROLE_DELETE)
     public ResponseEntity<Void> deleteRole(@PathVariable Long id) {

@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 /**
  * Fine-grained authority used to protect business operations.
  *
- * <p>Permissions are mapped directly to Spring Security authorities and do not
- * receive the {@code ROLE_} prefix.</p>
+ * <p>Permissions use the {@code PERMISSION_} prefix and are mapped directly to
+ * Spring Security authorities distinct from {@code ROLE_} role authorities.</p>
  *
  * @author Pial Kanti Samadder
  */

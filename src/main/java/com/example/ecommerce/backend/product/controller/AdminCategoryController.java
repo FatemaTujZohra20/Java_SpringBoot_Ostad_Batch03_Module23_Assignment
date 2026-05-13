@@ -48,7 +48,7 @@ public class AdminCategoryController {
      */
     @Operation(
             summary = "Create category",
-            description = "Requires CATEGORY_CREATE permission.",
+            description = "Requires PERMISSION_CATEGORY_CREATE permission.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(
@@ -77,7 +77,7 @@ public class AdminCategoryController {
      * @param request category update payload
      * @return updated category
      */
-    @Operation(summary = "Update category", description = "Requires CATEGORY_UPDATE permission.")
+    @Operation(summary = "Update category", description = "Requires PERMISSION_CATEGORY_UPDATE permission.")
     @PutMapping("/{id}")
     @PreAuthorize(AuthorizationExpressions.HAS_CATEGORY_UPDATE)
     public ResponseEntity<ApiResponse<Category>> updateCategory(
@@ -93,7 +93,7 @@ public class AdminCategoryController {
      * @param isActive desired active status
      * @return updated category
      */
-    @Operation(summary = "Activate or deactivate category", description = "Requires CATEGORY_UPDATE permission.")
+    @Operation(summary = "Activate or deactivate category", description = "Requires PERMISSION_CATEGORY_UPDATE permission.")
     @PutMapping("/{id}/status")
     @PreAuthorize(AuthorizationExpressions.HAS_CATEGORY_UPDATE)
     public ResponseEntity<ApiResponse<Category>> toggleCategoryStatus(
@@ -108,7 +108,7 @@ public class AdminCategoryController {
      * @param id category identifier
      * @return empty response
      */
-    @Operation(summary = "Delete category", description = "Requires CATEGORY_DELETE permission.")
+    @Operation(summary = "Delete category", description = "Requires PERMISSION_CATEGORY_DELETE permission.")
     @DeleteMapping("/{id}")
     @PreAuthorize(AuthorizationExpressions.HAS_CATEGORY_DELETE)
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {

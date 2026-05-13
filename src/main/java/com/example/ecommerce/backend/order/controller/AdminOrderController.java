@@ -43,7 +43,7 @@ public class AdminOrderController {
      */
     @Operation(
             summary = "Get order for administration",
-            description = "Requires ORDER_READ permission.",
+            description = "Requires PERMISSION_ORDER_READ permission.",
             responses = @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "Order retrieved successfully",
@@ -65,7 +65,7 @@ public class AdminOrderController {
      * @param id order identifier
      * @return cancelled order
      */
-    @Operation(summary = "Cancel order for administration", description = "Requires ORDER_CANCEL permission.")
+    @Operation(summary = "Cancel order for administration", description = "Requires PERMISSION_ORDER_CANCEL permission.")
     @PostMapping("/{id}/cancel")
     @PreAuthorize(AuthorizationExpressions.HAS_ORDER_CANCEL)
     public ResponseEntity<ApiResponse<OrderResponse>> cancelOrder(@PathVariable Long id) {

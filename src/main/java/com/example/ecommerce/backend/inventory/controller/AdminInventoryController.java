@@ -45,7 +45,7 @@ public class AdminInventoryController {
      */
     @Operation(
             summary = "Create product inventory",
-            description = "Requires INVENTORY_MANAGE permission.",
+            description = "Requires PERMISSION_INVENTORY_MANAGE permission.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(
@@ -74,7 +74,7 @@ public class AdminInventoryController {
      * @param request quantity payload
      * @return updated inventory
      */
-    @Operation(summary = "Increase inventory quantity", description = "Requires INVENTORY_MANAGE permission.")
+    @Operation(summary = "Increase inventory quantity", description = "Requires PERMISSION_INVENTORY_MANAGE permission.")
     @PostMapping("/{productId}/increase")
     @PreAuthorize(AuthorizationExpressions.HAS_INVENTORY_MANAGE)
     public ResponseEntity<ApiResponse<InventoryResponse>> increaseInventory(
@@ -90,7 +90,7 @@ public class AdminInventoryController {
      * @param request quantity payload
      * @return updated inventory
      */
-    @Operation(summary = "Decrease inventory quantity", description = "Requires INVENTORY_MANAGE permission.")
+    @Operation(summary = "Decrease inventory quantity", description = "Requires PERMISSION_INVENTORY_MANAGE permission.")
     @PostMapping("/{productId}/decrease")
     @PreAuthorize(AuthorizationExpressions.HAS_INVENTORY_MANAGE)
     public ResponseEntity<ApiResponse<InventoryResponse>> decreaseInventory(
@@ -106,7 +106,7 @@ public class AdminInventoryController {
      * @param request quantity payload
      * @return updated inventory
      */
-    @Operation(summary = "Reserve inventory quantity", description = "Requires INVENTORY_MANAGE permission.")
+    @Operation(summary = "Reserve inventory quantity", description = "Requires PERMISSION_INVENTORY_MANAGE permission.")
     @PostMapping("/{productId}/reserve")
     @PreAuthorize(AuthorizationExpressions.HAS_INVENTORY_MANAGE)
     public ResponseEntity<ApiResponse<InventoryResponse>> reserveInventory(
@@ -122,7 +122,7 @@ public class AdminInventoryController {
      * @param request quantity payload
      * @return updated inventory
      */
-    @Operation(summary = "Release reserved inventory quantity", description = "Requires INVENTORY_MANAGE permission.")
+    @Operation(summary = "Release reserved inventory quantity", description = "Requires PERMISSION_INVENTORY_MANAGE permission.")
     @PostMapping("/{productId}/release")
     @PreAuthorize(AuthorizationExpressions.HAS_INVENTORY_MANAGE)
     public ResponseEntity<ApiResponse<InventoryResponse>> releaseInventory(

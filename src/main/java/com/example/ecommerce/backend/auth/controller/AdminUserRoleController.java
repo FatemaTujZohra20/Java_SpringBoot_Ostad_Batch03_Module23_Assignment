@@ -39,7 +39,7 @@ public class AdminUserRoleController {
      * @param userId user identifier
      * @return assigned roles
      */
-    @Operation(summary = "List user roles", description = "Requires ROLE_ASSIGN permission.")
+    @Operation(summary = "List user roles", description = "Requires PERMISSION_ROLE_ASSIGN permission.")
     @GetMapping("/{userId}/roles")
     @PreAuthorize(AuthorizationExpressions.HAS_ADMIN_AND_ROLE_ASSIGN)
     public ResponseEntity<ApiResponse<List<RoleResponse>>> getUserRoles(@PathVariable Long userId) {
@@ -53,7 +53,7 @@ public class AdminUserRoleController {
      * @param roleId role identifier
      * @return updated role list
      */
-    @Operation(summary = "Assign role to user", description = "Requires ROLE_ASSIGN permission.")
+    @Operation(summary = "Assign role to user", description = "Requires PERMISSION_ROLE_ASSIGN permission.")
     @PostMapping("/{userId}/roles/{roleId}")
     @PreAuthorize(AuthorizationExpressions.HAS_ADMIN_AND_ROLE_ASSIGN)
     public ResponseEntity<ApiResponse<List<RoleResponse>>> assignRole(
@@ -69,7 +69,7 @@ public class AdminUserRoleController {
      * @param roleId role identifier
      * @return updated role list
      */
-    @Operation(summary = "Remove role from user", description = "Requires ROLE_ASSIGN permission.")
+    @Operation(summary = "Remove role from user", description = "Requires PERMISSION_ROLE_ASSIGN permission.")
     @DeleteMapping("/{userId}/roles/{roleId}")
     @PreAuthorize(AuthorizationExpressions.HAS_ADMIN_AND_ROLE_ASSIGN)
     public ResponseEntity<ApiResponse<List<RoleResponse>>> removeRole(

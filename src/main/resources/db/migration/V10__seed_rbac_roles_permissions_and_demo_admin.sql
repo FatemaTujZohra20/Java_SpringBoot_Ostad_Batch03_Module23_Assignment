@@ -9,30 +9,30 @@ ON CONFLICT (code) DO NOTHING;
 
 INSERT INTO permissions (name, code, description, created_at, modified_at)
 VALUES
-    ('Read Products', 'PRODUCT_READ', 'Allows reading product catalog data.', NOW(), NOW()),
-    ('Create Products', 'PRODUCT_CREATE', 'Allows creating product catalog records.', NOW(), NOW()),
-    ('Update Products', 'PRODUCT_UPDATE', 'Allows updating product catalog records.', NOW(), NOW()),
-    ('Delete Products', 'PRODUCT_DELETE', 'Allows deleting product catalog records.', NOW(), NOW()),
-    ('Read Categories', 'CATEGORY_READ', 'Allows reading product category data.', NOW(), NOW()),
-    ('Create Categories', 'CATEGORY_CREATE', 'Allows creating product category records.', NOW(), NOW()),
-    ('Update Categories', 'CATEGORY_UPDATE', 'Allows updating product category records.', NOW(), NOW()),
-    ('Delete Categories', 'CATEGORY_DELETE', 'Allows deleting product category records.', NOW(), NOW()),
-    ('Read Inventory', 'INVENTORY_READ', 'Allows reading inventory records.', NOW(), NOW()),
-    ('Manage Inventory', 'INVENTORY_MANAGE', 'Allows inventory creation, adjustment, reservation, and release.', NOW(), NOW()),
-    ('Read Orders', 'ORDER_READ', 'Allows reading customer order records.', NOW(), NOW()),
-    ('Update Orders', 'ORDER_UPDATE', 'Allows updating customer order records.', NOW(), NOW()),
-    ('Cancel Orders', 'ORDER_CANCEL', 'Allows cancelling eligible customer orders.', NOW(), NOW()),
-    ('Read Users', 'USER_READ', 'Allows reading user account records.', NOW(), NOW()),
-    ('Manage Users', 'USER_MANAGE', 'Allows managing user account records.', NOW(), NOW()),
-    ('Read Roles', 'ROLE_READ', 'Allows reading RBAC roles.', NOW(), NOW()),
-    ('Create Roles', 'ROLE_CREATE', 'Allows creating RBAC roles.', NOW(), NOW()),
-    ('Update Roles', 'ROLE_UPDATE', 'Allows updating RBAC roles.', NOW(), NOW()),
-    ('Delete Roles', 'ROLE_DELETE', 'Allows deleting RBAC roles.', NOW(), NOW()),
+    ('Read Products', 'PERMISSION_PRODUCT_READ', 'Allows reading product catalog data.', NOW(), NOW()),
+    ('Create Products', 'PERMISSION_PRODUCT_CREATE', 'Allows creating product catalog records.', NOW(), NOW()),
+    ('Update Products', 'PERMISSION_PRODUCT_UPDATE', 'Allows updating product catalog records.', NOW(), NOW()),
+    ('Delete Products', 'PERMISSION_PRODUCT_DELETE', 'Allows deleting product catalog records.', NOW(), NOW()),
+    ('Read Categories', 'PERMISSION_CATEGORY_READ', 'Allows reading product category data.', NOW(), NOW()),
+    ('Create Categories', 'PERMISSION_CATEGORY_CREATE', 'Allows creating product category records.', NOW(), NOW()),
+    ('Update Categories', 'PERMISSION_CATEGORY_UPDATE', 'Allows updating product category records.', NOW(), NOW()),
+    ('Delete Categories', 'PERMISSION_CATEGORY_DELETE', 'Allows deleting product category records.', NOW(), NOW()),
+    ('Read Inventory', 'PERMISSION_INVENTORY_READ', 'Allows reading inventory records.', NOW(), NOW()),
+    ('Manage Inventory', 'PERMISSION_INVENTORY_MANAGE', 'Allows inventory creation, adjustment, reservation, and release.', NOW(), NOW()),
+    ('Read Orders', 'PERMISSION_ORDER_READ', 'Allows reading customer order records.', NOW(), NOW()),
+    ('Update Orders', 'PERMISSION_ORDER_UPDATE', 'Allows updating customer order records.', NOW(), NOW()),
+    ('Cancel Orders', 'PERMISSION_ORDER_CANCEL', 'Allows cancelling eligible customer orders.', NOW(), NOW()),
+    ('Read Users', 'PERMISSION_USER_READ', 'Allows reading user account records.', NOW(), NOW()),
+    ('Manage Users', 'PERMISSION_USER_MANAGE', 'Allows managing user account records.', NOW(), NOW()),
+    ('Read Roles', 'PERMISSION_ROLE_READ', 'Allows reading RBAC roles.', NOW(), NOW()),
+    ('Create Roles', 'PERMISSION_ROLE_CREATE', 'Allows creating RBAC roles.', NOW(), NOW()),
+    ('Update Roles', 'PERMISSION_ROLE_UPDATE', 'Allows updating RBAC roles.', NOW(), NOW()),
+    ('Delete Roles', 'PERMISSION_ROLE_DELETE', 'Allows deleting RBAC roles.', NOW(), NOW()),
     ('Read Permissions', 'PERMISSION_READ', 'Allows reading RBAC permissions.', NOW(), NOW()),
     ('Create Permissions', 'PERMISSION_CREATE', 'Allows creating RBAC permissions.', NOW(), NOW()),
     ('Update Permissions', 'PERMISSION_UPDATE', 'Allows updating RBAC permissions.', NOW(), NOW()),
     ('Delete Permissions', 'PERMISSION_DELETE', 'Allows deleting RBAC permissions.', NOW(), NOW()),
-    ('Assign Roles', 'ROLE_ASSIGN', 'Allows assigning roles to users.', NOW(), NOW()),
+    ('Assign Roles', 'PERMISSION_ROLE_ASSIGN', 'Allows assigning roles to users.', NOW(), NOW()),
     ('Assign Permissions', 'PERMISSION_ASSIGN', 'Allows assigning permissions to roles.', NOW(), NOW())
 ON CONFLICT (code) DO NOTHING;
 
@@ -47,14 +47,14 @@ INSERT INTO role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM roles r
 JOIN permissions p ON p.code IN (
-    'PRODUCT_READ',
-    'PRODUCT_CREATE',
-    'PRODUCT_UPDATE',
-    'PRODUCT_DELETE',
-    'CATEGORY_READ',
-    'CATEGORY_CREATE',
-    'CATEGORY_UPDATE',
-    'CATEGORY_DELETE'
+    'PERMISSION_PRODUCT_READ',
+    'PERMISSION_PRODUCT_CREATE',
+    'PERMISSION_PRODUCT_UPDATE',
+    'PERMISSION_PRODUCT_DELETE',
+    'PERMISSION_CATEGORY_READ',
+    'PERMISSION_CATEGORY_CREATE',
+    'PERMISSION_CATEGORY_UPDATE',
+    'PERMISSION_CATEGORY_DELETE'
 )
 WHERE r.code = 'PRODUCT_MANAGER'
 ON CONFLICT DO NOTHING;
@@ -62,14 +62,14 @@ ON CONFLICT DO NOTHING;
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM roles r
-JOIN permissions p ON p.code IN ('INVENTORY_READ', 'INVENTORY_MANAGE')
+JOIN permissions p ON p.code IN ('PERMISSION_INVENTORY_READ', 'PERMISSION_INVENTORY_MANAGE')
 WHERE r.code = 'INVENTORY_MANAGER'
 ON CONFLICT DO NOTHING;
 
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM roles r
-JOIN permissions p ON p.code IN ('ORDER_READ', 'ORDER_CANCEL')
+JOIN permissions p ON p.code IN ('PERMISSION_ORDER_READ', 'PERMISSION_ORDER_CANCEL')
 WHERE r.code = 'SUPPORT_AGENT'
 ON CONFLICT DO NOTHING;
 
