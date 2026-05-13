@@ -20,16 +20,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OrderSecurityService {
     private static final String ROLE_ADMIN = "ROLE_ADMIN";
-    private static final String ORDER_READ = "PERMISSION_ORDER_READ";
-    private static final String ORDER_CANCEL = "PERMISSION_ORDER_CANCEL";
-    private static final String ORDER_UPDATE = "PERMISSION_ORDER_UPDATE";
+    private static final String PERMISSION_ORDER_READ = "PERMISSION_ORDER_READ";
+    private static final String PERMISSION_ORDER_CANCEL = "PERMISSION_ORDER_CANCEL";
+    private static final String PERMISSION_ORDER_UPDATE = "PERMISSION_ORDER_UPDATE";
 
     private final OrderRepository orderRepository;
 
     /**
      * Checks whether the authenticated user can access an order.
      *
-     * @param orderId order identifier
+     * @param orderId        order identifier
      * @param authentication current authentication
      * @return {@code true} when access is allowed
      */
@@ -38,9 +38,11 @@ public class OrderSecurityService {
         if (authentication == null || !(authentication.getPrincipal() instanceof AuthenticatedUser user)) {
             return false;
         }
-        if (hasAnyAuthority(authentication, ROLE_ADMIN, ORDER_READ, ORDER_CANCEL, ORDER_UPDATE)) {
+
+        if (hasAnyAuthority(authentication, ROLE_ADMIN, PERMISSION_ORDER_READ, PERMISSION_ORDER_CANCEL, PERMISSION_ORDER_UPDATE)) {
             return true;
         }
+
         return orderRepository.findById(orderId)
                 .map(order -> order.getUserId().equals(user.id()))
                 .orElse(false);
