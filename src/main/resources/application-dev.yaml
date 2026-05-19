@@ -20,6 +20,20 @@ spring:
       hibernate:
         format_sql: true
 
+  # For assignment 23
+  # Java Mail Sender Related configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: YOUR_GMAIL_ID
+    password: YOUR_GMAIL_APP_PASSWORD
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 # Stripe Payment Configuration
 stripe:
   api-key: sk_test_51ShYsBFIOgharRgILUZniUK5LMfNDjj8Bzs7pBMPYbQYYE04upl7Cj9RHYFG0BseDD72lCZuSgoDQvNF7QmvQ3uU00TPRFWTpu
