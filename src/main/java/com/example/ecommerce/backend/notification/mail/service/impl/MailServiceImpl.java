@@ -2,6 +2,7 @@ package com.example.ecommerce.backend.notification.mail.service.impl;
 
 import com.example.ecommerce.backend.notification.mail.dto.MailOrderItemDto;
 import com.example.ecommerce.backend.notification.mail.dto.PaymentConfirmationMailDto;
+import com.example.ecommerce.backend.notification.mail.service.MailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class MailServiceImpl {
+public class MailServiceImpl implements MailService {
     private final JavaMailSender javaMailSender;
     private final String fromEmail;
     
