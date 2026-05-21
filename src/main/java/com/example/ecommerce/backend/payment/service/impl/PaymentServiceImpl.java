@@ -25,6 +25,7 @@ import com.stripe.param.checkout.SessionCreateParams;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -90,7 +91,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     /**
-     * Marks a payment attempt as successful and moves the linked order to paid.
+     * Marks a payment attempt as successful and moves the linked order to "paid".
      *
      * @param sessionId Stripe checkout session identifier
      */
@@ -119,14 +120,44 @@ public class PaymentServiceImpl implements PaymentService {
         order.setModifiedBy(order.getUserId());
 
         orderRepository.save(order);
-        paymentHistoryRepository.save(paymentHistory);
-        log.info("Successful payment handled for sessionId={}, orderId={}", sessionId, order.getId());
-        
         
         // For the assignment 23
-        User user = userRepository.findById(order.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found: " + order.getUserId()));
+        // I am using the returned entity so confirmedPayment.getModifiedAt() reflects the actual
+        // DB-persisted payment timestamp, not the stale pre-save value on the original reference.
+        PaymentHistory confirmedPayment = paymentHistoryRepository.save(paymentHistory);
+        log.info("Successful payment handled for sessionId={}, orderId={}", sessionId, order.getId());
         
+        notifyUserOfSuccessfulPayment(order, confirmedPayment);
+        
+    }
+    
+    // For the assignment 23
+    // Separated from handleSuccessfulPayment so a mail failure never leaks into -
+    // the payment transaction. The payment is already persisted before this is called.
+    private void notifyUserOfSuccessfulPayment(Order order, PaymentHistory confirmedPayment) {
+        try {
+            User user = userRepository.findById(order.getUserId()).orElse(null);
+            
+            // Validate both user existence and email presence before attempting delivery.
+            if (user == null || !isValidEmail(user.getEmail())) {
+                log.warn("Payment notification skipped — no valid email on record. orderId={}, userId={}",
+                        order.getId(), order.getUserId());
+                return;
+            }
+            
+            PaymentConfirmationMailDto mailDto = buildConfirmationMailDto(user, order, confirmedPayment);
+            mailService.sendPaymentConfirmation(mailDto);
+            
+        } catch (MailException e) {
+            // Catching MailException specifically — not broad Exception — so programming errors
+            // are never silently swallowed here. It adds warn not error: payment is safe, only notification failed.
+            log.warn("Payment notification email failed for orderId={}. Cause: {}", order.getId(), e.getMessage());
+        }
+    }
+    
+    // For the assignment 23
+    // Builds the mail DTO separately to keep notifyUserOfSuccessfulPayment readable.
+    private PaymentConfirmationMailDto buildConfirmationMailDto(User user, Order order, PaymentHistory confirmedPayment) {
         List<MailOrderItemDto> mailItems = order.getItems().stream()
                 .map(item -> new MailOrderItemDto(
                         item.getProductName(),
@@ -135,23 +166,21 @@ public class PaymentServiceImpl implements PaymentService {
                         item.getTotalPrice()))
                 .toList();
         
-        
-        PaymentConfirmationMailDto mailDto = new PaymentConfirmationMailDto(
+        return new PaymentConfirmationMailDto(
                 user.getEmail(),
                 user.getFirstName(),
                 order.getOrderNumber(),
                 order.getCreatedAt(),
-                paymentHistory.getModifiedAt(),
+                confirmedPayment.getModifiedAt(),
                 order.getTotalAmount(),
                 mailItems);
-        
-        try {
-            mailService.sendPaymentConfirmation(mailDto);
-        } catch (Exception e) {
-            log.error("Failed to send payment confirmation email for orderId={}", order.getId(), e);
-        }
     }
-
+    
+    private boolean isValidEmail(String email) {
+        return email != null && !email.isBlank();
+    }
+    
+    
     /**
      * Marks a payment attempt as failed while keeping the linked order confirmed
      * for future timeout cancellation.
