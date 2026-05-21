@@ -25,8 +25,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: YOUR_GMAIL_ID
-    password: YOUR_GMAIL_APP_PASSWORD
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -47,3 +47,12 @@ logging:
     com:
       example:
         ecommerce_service: INFO
+
+# For assignment 23
+notification:
+  mail:
+    # We write real Gmail address in the "sender" in "dev" so confirmation test emails -
+    # are actually deliverable locally.
+    sender: ${MAIL_USERNAME}
+    sender-name: Ecommerce Store
+

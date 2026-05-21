@@ -18,3 +18,9 @@ jwt:
   signing-key: verySecretKeyForJwtSigningExample123456789verySecretKeyForJwtSigningExample123456789
   expiration: 15m
   refresh-expiration: 7d
+
+# For assignment 23
+notification:
+  mail:
+    # Display name shown to customers in their inbox — consistent across all environments.
+    sender-name: Ecommerce Store
